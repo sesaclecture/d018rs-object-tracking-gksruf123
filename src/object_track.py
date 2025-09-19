@@ -47,11 +47,36 @@ def update_color_value(x, color, is_min):
 
 def load_config(config_path):
     # TODO: LAB-cal.json 파일을 읽어와서 전역 변수에 설정하기
-    pass
+    global l_min, l_max, a_min, a_max, b_min, b_max
+
+    try:
+        with open(config_path, "r", encoding="utf-8") as f:
+            data = json.load(f)
+        l_min = int(data.get("l_min", l_min))
+        l_max = int(data.get("l_max", l_max))
+        a_min = int(data.get("a_min", a_min))
+        a_max = int(data.get("a_max", a_max))
+        b_min = int(data.get("b_min", b_min))
+        b_max = int(data.get("b_max", b_max))
+    except FileNotFoundError:
+        print(f"config file not found: {config_path}")
+    except json.JSONDecodeError as e:
+        print(f"JSON decode error: {e}")
 
 
 def save_config(config_path):
     # TODO: 현재 설정된 전역 변수를 LAB-cal.json 파일로 저장하기
+    save_data = {
+        # TODO: Fill out with l_min, l_max, a_min, a_max, b_min, b_man, values respectively.
+        "l_min": l_min,
+        "l_max": l_max,
+        "a_min": a_min,
+        "a_max": a_max,
+        "b_min": b_min,
+        "b_max": b_max
+    }    
+    with open(config_path, "w") as f:
+        json.dump(save_data, f, indent=4)    
     pass
 
 
@@ -66,12 +91,28 @@ def update_trackbar_positions():
 
 def find_biggest_contour(mask):
     # TODO: mask 변수 값으로 부터 연결된 객체 중 가장 큰 객체 찾기
-    pass
+    contour, _ = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    if contour:
+        biggest = max(contour, key=cv2.contourArea)
+    else:
+        return None
+    return biggest
+
 
 
 def draw_boundingbox(image, contour):
     # TODO: 가장 큰 객체에 대해 외접하는 바운딩 박스 그리기, cv2.boundingRect() 사용
+    for cnt in contour:
+        x, y, w, h = cv2.boundingRect(cnt)
+        cv2.rectangle(image, (x, y), (x+w, y+h), (0, 255, 0), 2)
     # TODO: Rect: (x y w h) 형태로 좌표 출력, cv2.putText() 사용
+    cv2.putText(image, f"x: {x}, y:{y}, {w}, {h}",
+                org=(x, y), fontFace=cv2.FONT_HERSHEY_SIMPLEX,
+                fontScale=2,
+                color=(0, 255, 0),
+                thickness=3,
+                lineType=cv2.LINE_AA
+                )
     pass
 
 
