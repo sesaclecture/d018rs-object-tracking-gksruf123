@@ -102,9 +102,8 @@ def find_biggest_contour(mask):
 
 def draw_boundingbox(image, contour):
     # TODO: 가장 큰 객체에 대해 외접하는 바운딩 박스 그리기, cv2.boundingRect() 사용
-    for cnt in contour:
-        x, y, w, h = cv2.boundingRect(cnt)
-        cv2.rectangle(image, (x, y), (x+w, y+h), (0, 255, 0), 2)
+    x, y, w, h = cv2.boundingRect(contour)
+    cv2.rectangle(image, (x, y), (x+w, y+h), (0, 255, 0), 2)
     # TODO: Rect: (x y w h) 형태로 좌표 출력, cv2.putText() 사용
     cv2.putText(image, f"x: {x}, y:{y}, {w}, {h}",
                 org=(x, y), fontFace=cv2.FONT_HERSHEY_SIMPLEX,
